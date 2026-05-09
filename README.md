@@ -86,7 +86,6 @@ If the key or provider request is unavailable, the UI falls back to local mock o
 - `index.html` and `src/main.jsx` are the Vite entry points.
 - `src/App.jsx`, `src/screens.jsx`, and files under `src/components/` are the active source files.
 - `server/index.js` starts the local Express API. CV routes live in `server/routes/cv.js`, and DeepSeek calls live in `server/services/deepseek.js`.
-- `server/aiProxy.js` remains only as a temporary compatibility wrapper for the old Vite middleware shape.
 - `shared/schemas/` contains zod schemas reused by the client and server.
-- `JobMuse.html` and `jobmuse-app.jsx` are the original static prototype files and remain for reference.
+- The old root-level Claude prototype files have been removed; edit `src/` as the UI source of truth.
 - `BuildPlan.md` documents the first local setup pass. `BuildPlan-02.md` tracks the product implementation roadmap.

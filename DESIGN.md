@@ -18,7 +18,7 @@ A short, opinionated guide for keeping JobMuse's UI consistent. The goal is a **
 
 - **Sans:** [Geist](https://vercel.com/font) — weights 400 / 500 / 600 / 700.
 - **Mono:** Geist Mono — weights 400 / 500. Used for dates, counts, file names, keyboard shortcuts, and AI model labels.
-- Loaded via Google Fonts in `JobMuse.html`.
+- Loaded via Google Fonts in `index.html`.
 - `font-feature-settings: "ss01", "cv11"` is on at the body level.
 
 ### Scale
@@ -38,7 +38,7 @@ Body size scales with density (`--jr-density-fs`: 13 / 14 / 15px).
 
 ## 3. Color
 
-All values live as CSS custom properties on `:root` and `[data-theme="dark"]` in `JobMuse.html`. **Never hard-code colors in components — pull from tokens.**
+All values live as CSS custom properties on `:root` and `[data-theme="dark"]` in `src/styles/global.css`. **Never hard-code colors in components — pull from tokens.**
 
 ### Light (default)
 
@@ -195,12 +195,9 @@ shared/schemas/               Zod schemas reused by browser and server code.
 server/index.js               Local Express API bootstrap.
 server/routes/cv.js           CV generation/revision routes.
 server/services/deepseek.js   DeepSeek client, normalization, and mock fallback.
-server/aiProxy.js             Temporary compatibility wrapper for the old Vite middleware shape.
-JobMuse.html                  Original static prototype entry, kept for reference.
-jobmuse-app.jsx               Original generated bundle, kept for reference.
 ```
 
-**Edit files under `src/` as the active UI source of truth.** Server-side local AI behavior lives in the Express API under `server/`. `JobMuse.html` and `jobmuse-app.jsx` are legacy prototype artifacts and are not used by the Vite dev server.
+**Edit files under `src/` as the active UI source of truth.** Server-side local AI behavior lives in the Express API under `server/`. The old root-level static prototype files were removed to keep the project focused on the active Vite app.
 
 ---
 

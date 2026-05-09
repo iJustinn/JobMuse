@@ -17,7 +17,7 @@ import {
 } from "./components/ui.jsx";
 
 // Screens for JobMuse.
-// Each screen is a React component that consumes window.JR_DATA + props from App.
+// Each screen is a React component that consumes the local seed data + props from App.
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

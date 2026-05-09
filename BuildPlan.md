@@ -83,13 +83,7 @@ JobMuse is a job-application and CV-tailoring website prototype with a Notion-st
 6. `src/ai/client.js` calls local `/api/*` routes.
 7. `server/index.js` serves `/api/*`; `server/routes/cv.js` handles CV routes; `server/services/deepseek.js` reads server-side env vars and calls DeepSeek.
 
-**Legacy static entry still present for reference:**
-
-1. `JobMuse.html` loads React, ReactDOM, Babel Standalone, and fonts from CDNs.
-2. It loads root-level `data.js`, `tweaks-panel.jsx`, and `jobmuse-app.jsx`.
-3. `jobmuse-app.jsx` is the generated concatenated bundle of `ui.jsx`, `screens.jsx`, and `app.jsx`.
-
-The legacy static path is no longer the recommended local setup path.
+**Legacy static entry:** removed after the active Vite app was established. `src/` is now the UI source of truth.
 
 ---
 
@@ -103,22 +97,19 @@ JobMuse/
   .gitignore
   BuildPlan.md
   DESIGN.md
-  JobMuse.html
   LessonsLearned.md
   LICENSE
   README.md
-  app.jsx
-  data.js
   index.html
-  jobmuse-app.jsx
   package-lock.json
   package.json
-  screens.jsx
-  tweaks-panel.jsx
-  ui.jsx
   vite.config.js
   server/
-    aiProxy.js
+    index.js
+    routes/
+      cv.js
+    services/
+      deepseek.js
   src/
     App.jsx
     data.js
@@ -145,7 +136,6 @@ JobMuse/
 | `server/index.js` | Standalone Express API bootstrap. | Complete |
 | `server/routes/cv.js` | CV generation/revision routes. | Complete |
 | `server/services/deepseek.js` | DeepSeek client, response normalization, and mock fallback. | Complete |
-| `server/aiProxy.js` | Temporary compatibility wrapper for the old Vite middleware shape. | Complete |
 | `src/main.jsx` | React root render and CSS import. | Complete |
 | `src/App.jsx` | App shell, routing, responsive shell layout, tweaks wiring. | Complete |
 | `src/data.js` | Mock dataset exported as `JR_DATA`. | Complete |
@@ -157,17 +147,7 @@ JobMuse/
 | `src/ai/schemas.js` | Re-export of shared CV response validators. | Complete |
 | `shared/schemas/` | Shared zod schemas for client and server validation. | Complete |
 
-**Legacy/reference files:**
-
-| File | Purpose | Recommendation |
-|---|---|---|
-| `JobMuse.html` | Original static Claude prototype entry. | Move to `legacy/` after approval. |
-| `jobmuse-app.jsx` | Generated concatenated bundle. | Move to `legacy/` after approval. |
-| `app.jsx` | Original root app source. | Move to `legacy/` after approval. |
-| `screens.jsx` | Original root screen source. | Move to `legacy/` after approval. |
-| `ui.jsx` | Original root UI primitives. | Move to `legacy/` after approval. |
-| `data.js` | Original root global data file. | Move to `legacy/` after approval. |
-| `tweaks-panel.jsx` | Original root global tweaks panel. | Move to `legacy/` after approval. |
+**Legacy/reference files:** removed. The active app lives in `src/`, with backend code in `server/`.
 
 ---
 
@@ -259,8 +239,6 @@ JobMuse/
   DESIGN.md
   BuildPlan.md
   LessonsLearned.md
-  server/
-    aiProxy.js
   src/
     main.jsx
     App.jsx
@@ -274,14 +252,6 @@ JobMuse/
       TweaksPanel.jsx
     styles/
       global.css
-  legacy/
-    JobMuse.html
-    jobmuse-app.jsx
-    app.jsx
-    screens.jsx
-    ui.jsx
-    data.js
-    tweaks-panel.jsx
 ```
 
 ---
@@ -349,7 +319,6 @@ JobMuse/
 - `server/index.js`
 - `server/routes/cv.js`
 - `server/services/deepseek.js`
-- `server/aiProxy.js` compatibility wrapper
 - `src/ai/client.js`
 - `src/ai/schemas.js`
 - `shared/schemas/cv.js`
@@ -551,7 +520,7 @@ POST /api/revise-cv
 
 ### Remaining
 
-- [ ] Move or delete legacy root prototype files after approval.
+- [x] Delete legacy root prototype files after approval.
 - [ ] Optionally normalize mock identity data.
 - [ ] Optionally self-host fonts for offline support.
 
@@ -561,12 +530,12 @@ POST /api/revise-cv
 
 | ID | Decision | Recommended choice |
 |---|---|---|
-| D-LEGACY-1 | Move/delete/keep root legacy files. | Move to `legacy/` after approval. |
+| D-LEGACY-1 | Move/delete/keep root legacy files. | Complete: deleted after approval. |
 | D-DATA-1 | Normalize mock user identity. | Pick one sample identity and update all mock data. |
 | D-FONT-1 | Keep Google Fonts CDN or self-host Geist. | Keep CDN unless offline support is required. |
 
 Current operational risks:
 
-- Legacy root files can confuse future edits because active source is under `src/`.
+- Active source now lives only under `src/`; legacy root prototype files were removed to avoid future edit confusion.
 - DeepSeek output quality still depends on provider behavior, so response validation and mock fallback should remain.
 - The API key must stay in `.env.local` or another server-side environment. Do not add it to `.env.example` or any `src/` file.

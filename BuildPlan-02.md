@@ -24,7 +24,7 @@ Authoritative grounding:
 - React + Vite app, Vite 8, React 18.3.1, plugin-react 6.
 - Local Express API in `server/index.js` on port `8787`; Vite proxies `/api` to it.
 - CV generation/revision routes in `server/routes/cv.js`, backed by `server/services/deepseek.js`.
-- `server/aiProxy.js` remains as a temporary compatibility wrapper only; `vite.config.js` no longer mounts it.
+- The old `server/aiProxy.js` compatibility wrapper has been removed; `vite.config.js` proxies `/api` to the standalone Express server.
 - DeepSeek `chat/completions` calls with strict-JSON prompting, response normalization, and validators in `shared/schemas/cv.js`.
 - Mock fallback when no API key is set or DeepSeek errors.
 - `DEEPSEEK_API_KEY` lives only in `.env.local` (server-side); the client bundle is verified clean of secrets.
@@ -53,7 +53,7 @@ The "Fakeness inventory" in §3 is the full catalogue. The headlines:
 
 **Direction this plan recommends (full rationale in §4):**
 
-- Backend: promote `server/aiProxy.js` to a real Node + Express service in `server/`, served beside Vite in dev via `vite.proxy`.
+- Backend: use the real Node + Express service in `server/`, served beside Vite in dev via `vite.proxy`.
 - Database + auth + file storage: **Supabase** as the default. Postgres + Supabase Auth + Supabase Storage in one managed service, with row-level security from day one. (Alternative: Neon + better-auth + S3-compatible storage — listed as decision D-DB-1.)
 - ORM: **Drizzle ORM** for type-safe SQL with shared schema between client and server.
 - Routing: **React Router v6** to replace the `useState` route in `src/App.jsx`.
@@ -130,7 +130,7 @@ Every mocked surface, with the file and line where it lives. This is the work li
 | F-APPS-3 | Status not editable | `screens.jsx:923` | `<StatusDot/> {a.status}` — read-only. | Click → dropdown → `PATCH /api/applications/:id`. |
 | F-APPS-4 | Application detail view missing | `screens.jsx:905–930` | Row has `cursor: "pointer"` but no `onClick`. | Route `/app/:id` rendering JD + CV + revision history + notes. |
 | F-APPS-5 | "New" doesn't create a record | `screens.jsx:856` | `onClick={() => go?.("new")}` only routes; no DB write happens until generation completes — and even then nothing is persisted. | `POST /api/applications` returns id; redirect to `/app/:id`. |
-| F-APPS-6 | Match score is invented | `screens.jsx:201` (`match: 87`), `aiProxy.js:213` (`clampMatch`) | DeepSeek can return any number; otherwise hard-coded 87. | Compute from CV/memory–vs–JD overlap (skills, role title, fit signals) + AI confidence; store on the record. |
+| F-APPS-6 | Match score is invented | `src/data.js`, `server/services/deepseek.js` (`clampMatch`) | DeepSeek can return any number; otherwise hard-coded fallback score. | Compute from CV/memory–vs–JD overlap (skills, role title, fit signals) + AI confidence; store on the record. |
 
 ### 3.3 Memory facts
 
@@ -141,7 +141,7 @@ Every mocked surface, with the file and line where it lives. This is the work li
 | F-MEM-3 | "New category" disabled | `screens.jsx:989` | Disabled button. | Categories live on the row (free-text) or a separate `memory_categories` table — see D-MEM-1. |
 | F-MEM-4 | Per-row chevron does nothing | `screens.jsx:1033–1035` | Row has `cursor: "text"` but no editor. | Inline edit or right-side detail panel; `PATCH /api/memory/:id`. |
 | F-MEM-5 | "Source" labels are decorative | `data.js` `source: "resume.pdf"` etc. | No file backing the labels. | Source is either `manual` or a foreign key to an uploaded `files` row. |
-| F-MEM-6 | Memory passed to AI but never selected | `screens.jsx:230–232`, `aiProxy.js:107–108` | The full memory dump goes to DeepSeek every time. | Score relevance per JD signal, send only the top-N facts to keep prompt cost down. |
+| F-MEM-6 | Memory passed to AI but never selected | `src/screens.jsx`, `server/services/deepseek.js` | The full memory dump goes to DeepSeek every time. | Score relevance per JD signal, send only the top-N facts to keep prompt cost down. |
 
 ### 3.4 The CV / JD / Chat trio
 
@@ -212,7 +212,7 @@ Each decision is **needed** and has a recommendation. Anything else is a delay t
 |---|---|---|---|---|
 | D-DB-1 | Database + auth + file storage | **Supabase** (Postgres + Auth + Storage) | Neon + better-auth + Cloudflare R2 / AWS S3; Convex; Firebase | One service covers DB, auth, RLS, file uploads, with a generous free tier and a sane SDK. The big tradeoff is vendor lock-in on Auth — RLS-based auth is hard to migrate off. If lock-in is a hard no, switch to Neon + better-auth. |
 | D-ORM-1 | ORM | **Drizzle ORM** | Prisma; raw SQL via Supabase client | TS-first, lightweight, schemas live in code (shareable with client). Works fine with Supabase Postgres. |
-| D-API-1 | Backend shape | **Express on Node, mounted at `server/index.js`. In dev, served by `vite.proxy`. In prod, deployed as a single Node process.** | Promote `server/aiProxy.js`-style middleware plugin everywhere; Next.js 15 route handlers; Hono on Cloudflare Workers | Lowest churn from today's setup. Keeps the existing `aiProxy.js` code path. Avoids the React Server Components / RSC migration that Next.js would force. |
+| D-API-1 | Backend shape | **Express on Node, mounted at `server/index.js`. In dev, served by `vite.proxy`. In prod, deployed as a single Node process.** | Vite middleware plugin; Next.js 15 route handlers; Hono on Cloudflare Workers | Lowest churn from today's setup. Avoids the React Server Components / RSC migration that Next.js would force. |
 | D-ROUTER-1 | Client routing | **React Router v6** | TanStack Router; Wouter | Mainstream, plays well with TanStack Query, and the only one whose API the team likely already knows. |
 | D-STATE-1 | Server state | **TanStack Query (React Query) v5** | Native fetch + custom hook; SWR; RTK Query | Standard for this stack. Caching, retries, optimistic updates, invalidation are all first-class. |
 | D-FORM-1 | Forms + validation | **react-hook-form + zod** (with `@hookform/resolvers`) | Formik; native `<form>` | Zod schemas can be reused on the server (the same validator that runs in `react-hook-form` runs in the Express handler). |
@@ -285,7 +285,6 @@ JobMuse/
       settings.js
   server/
     index.js                        # NEW — Express bootstrap
-    aiProxy.js                      # temporary compatibility wrapper for old middleware shape
     db/
       client.js                     # Drizzle client (postgres-js or supabase-js)
       schema.js                     # all tables
@@ -550,7 +549,7 @@ Auth endpoints are owned by the Supabase client SDK on the client; the server on
 - Stand up a Supabase project (D-DB-1). Capture URL + anon key + service-role key in `.env.local`.
 - Create the Postgres schema from §6 via Drizzle migrations.
 - Bootstrap Express in `server/index.js` listening on `:8787`.
-- Move the AI proxy from `server/aiProxy.js` (Vite middleware shape) to `server/routes/cv.js` (Express router shape). Keep the in-process version for backwards compat behind a feature flag for one phase, then remove.
+- Use `server/routes/cv.js` (Express router shape) for CV API routes.
 - Add `vite.config.js` `server.proxy: { "/api": "http://localhost:8787" }`.
 - Add `npm run server` script (`node --watch server/index.js`) and `npm run dev:all` (concurrently `vite` + `npm run server`).
 
@@ -561,7 +560,7 @@ Auth endpoints are owned by the Supabase client SDK on the client; the server on
 - `psql` shows all tables from §6 with RLS enabled.
 
 **Implementation status (2026-05-09):**
-- Complete: dependencies, scripts, `.env.example`, `.gitignore`, standalone Express API, CV routes, DeepSeek service extraction, Vite `/api` proxy, shared zod schemas, Drizzle schema, generated migration, RLS SQL, Supabase auth middleware scaffold, request validation middleware, and `server/aiProxy.js` compatibility wrapper.
+- Complete: dependencies, scripts, `.env.example`, `.gitignore`, standalone Express API, CV routes, DeepSeek service extraction, Vite `/api` proxy, shared zod schemas, Drizzle schema, generated migration, RLS SQL, Supabase auth middleware scaffold, request validation middleware, and removal of the obsolete `server/aiProxy.js` wrapper.
 - Verified locally: `npm run build`, `npm audit`, direct Express API `/api/ai-status`, DeepSeek-backed `/api/generate-cv`, `npm run dev:all`, and Vite proxying `/api/ai-status` through `http://localhost:5173`.
 - Pending external setup: create/configure the Supabase project, fill `SUPABASE_*` and `DATABASE_URL` in `.env.local`, run `npm run db:migrate`, and verify tables/RLS in Supabase or `psql`.
 - Note: implementation uses `.js` files (`drizzle.config.js`, `shared/schemas/*.js`) to match the current JavaScript codebase. The Drizzle schema intentionally avoids a generated FK to `auth.users`; ownership is enforced in the Supabase RLS SQL and should be rechecked during the real Supabase migration.
@@ -634,7 +633,7 @@ Auth endpoints are owned by the Supabase client SDK on the client; the server on
 **Files:** `server/routes/cv.js`, `server/services/deepseek.js`, `server/services/quota.js`, `server/routes/jd.js`, `src/api/cv.js`, `src/routes/new.jsx`, `src/screens.jsx` (delete the now-unused logic, or split per phase).
 
 **Work:**
-- Promote `aiProxy.js` to a real router; move prompt building to `services/deepseek.js`.
+- Keep prompt building in `services/deepseek.js` behind the real CV router.
 - Save every generated CV to `cvs` (version starting at 1).
 - Implement `/api/jd/signals` (DeepSeek call returning `[{phrase, kind, weight}]`) — drives F-JD-1, F-JD-2.
 - Add prompt cache in Postgres keyed on `(user_id, sha256(jd), profile_hash)` — D-AI-COST-1.
@@ -737,7 +736,7 @@ This is a delta, not a redo. Files not listed are unchanged.
 | `src/components/TweaksPanel.jsx` | Wrap export in `if (!import.meta.env.DEV) return null` at the top of the component. | F-TWEAK-1. |
 | `src/ai/client.js` | **Still needed**: rename to `src/api/cv.js`, expose TanStack Query hooks (`useGenerateCv`, `useReviseCv`). Keep the validators by re-exporting from `shared/schemas/cv.js`. | API surface migrating to TanStack Query. |
 | `src/ai/schemas.js` | **Complete for Phase 1**: now re-exports from `shared/schemas/cv.js`. Shared schemas also exist for application, memory, profile, settings, and JD signals. Later TypeScript conversion remains optional. | Shared zod schemas. |
-| `server/aiProxy.js` | **Partly complete**: replaced the implementation with a small compatibility wrapper. New entry is `server/index.js`; CV routes live in `server/routes/cv.js`; DeepSeek client lives in `server/services/deepseek.js`. Remove this wrapper after one stable phase. | Backend reorg. |
+| `server/aiProxy.js` | **Complete**: removed. New entry is `server/index.js`; CV routes live in `server/routes/cv.js`; DeepSeek client lives in `server/services/deepseek.js`. | Backend cleanup. |
 | `server/index.js` | **NEW**. Express bootstrap with `helmet`, `cors` (allow Vite origin), `cookie-parser`, route mounting, error handler. | Backend foundation. |
 | `server/db/client.js` | **NEW**. Drizzle client over `postgres`. | DB. |
 | `server/db/schema.js` | **NEW**. All tables from §6. | DB. |
