@@ -1,0 +1,44 @@
+# Dependencies and build outputs
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# Local environment and API keys
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.secret
+*.secrets
+secrets/
+private/
+
+# Local/private profile, resume, and generated export data
+src/data.private.js
+src/data.local.js
+data.private.js
+data.local.js
+*.doc
+*.docx
+*.rtf
+*.pages
+*.numbers
+*Resume*
+*resume*
+*CoverLetter*
+*cover-letter*
+exports/
+downloads/
+screenshots/
+CleanShot*
+
+# Local tool and OS files
+.DS_Store
+.claude/settings.local.json
