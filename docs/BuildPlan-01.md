@@ -1,4 +1,4 @@
-# JobMuse - Build Plan
+# JobMuse - Build Plan 01
 
 This document is the local setup plan and implementation record for JobMuse on branch `codex/v0.1.0`.
 
@@ -8,7 +8,7 @@ Updated on May 8, 2026 after the Vite/React conversion, and updated again on May
 
 ## 0. Current Status
 
-**Overall status:** the local website setup is complete. JobMuse now runs as a React + Vite app with a standalone local Express API for DeepSeek-backed routes. The original Claude design-output files remain in the root as legacy references, but the active application source is under `src/`.
+**Overall status:** the local website setup is complete. JobMuse now runs as a React + Vite app with a standalone local Express API for DeepSeek-backed routes. The original Claude design-output files were removed, and the active application source is under `src/`.
 
 **Finished implementation work:**
 
@@ -27,7 +27,7 @@ Updated on May 8, 2026 after the Vite/React conversion, and updated again on May
 - **Complete:** Kept `DEEPSEEK_API_KEY` server-side in ignored `.env.local`.
 - **Complete:** Redacted `.env.example` so it remains a safe template.
 - **Complete:** Disabled or implemented previously silent no-op product actions.
-- **Complete:** Updated `README.md`, `DESIGN.md`, `LessonsLearned.md`, and this plan.
+- **Complete:** Updated `README.md`, `docs/DESIGN.md`, `LessonsLearned.md`, and this plan.
 
 **Finished verification work:**
 
@@ -48,7 +48,7 @@ Updated on May 8, 2026 after the Vite/React conversion, and updated again on May
 
 **Remaining decisions only:**
 
-- **Pending approval:** Move or delete the root-level legacy Claude output files.
+- **Complete:** Deleted the root-level legacy Claude output files.
 - **Optional:** Normalize all mock profile identity fields.
 - **Optional:** Self-host Geist fonts if offline support becomes a requirement.
 
@@ -95,8 +95,10 @@ Important current files and folders:
 JobMuse/
   .env.example
   .gitignore
-  BuildPlan.md
-  DESIGN.md
+  docs/
+    BuildPlan-01.md
+    BuildPlan-02.md
+    DESIGN.md
   LessonsLearned.md
   LICENSE
   README.md
@@ -236,8 +238,10 @@ JobMuse/
   .env.example
   .gitignore
   README.md
-  DESIGN.md
-  BuildPlan.md
+  docs/
+    DESIGN.md
+    BuildPlan-01.md
+    BuildPlan-02.md
   LessonsLearned.md
   src/
     main.jsx

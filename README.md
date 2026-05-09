@@ -88,4 +88,5 @@ If the key or provider request is unavailable, the UI falls back to local mock o
 - `server/index.js` starts the local Express API. CV routes live in `server/routes/cv.js`, and DeepSeek calls live in `server/services/deepseek.js`.
 - `shared/schemas/` contains zod schemas reused by the client and server.
 - The old root-level Claude prototype files have been removed; edit `src/` as the UI source of truth.
-- `BuildPlan.md` documents the first local setup pass. `BuildPlan-02.md` tracks the product implementation roadmap.
+- `docs/BuildPlan-01.md` documents the first local setup pass. `docs/BuildPlan-02.md` tracks the product implementation roadmap.
+- `docs/DESIGN.md` contains the UI/design guidelines.

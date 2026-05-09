@@ -1,6 +1,6 @@
 # JobMuse - Build Plan 02 (Make it real)
 
-This is the follow-up to `BuildPlan.md`. That plan got the React + Vite scaffold, AI proxy, and prototype UI running locally with mock data and disabled actions. **This plan turns that working shell into a real, multi-user product.**
+This is the follow-up to `BuildPlan-01.md`. That plan got the React + Vite scaffold, AI proxy, and prototype UI running locally with mock data and disabled actions. **This plan turns that working shell into a real, multi-user product.**
 
 The current site renders, navigates, calls DeepSeek for CV generation/revision, and looks correct at four viewports. **Almost everything else is mocked.** Refresh the page and every action you took is gone. The current public seed user is hard-coded demo data in `src/data.js`; real resume-backed seed data must stay in ignored local files. Every list (applications, memory facts, settings) is still a static array. Many buttons are disabled with `title="… not implemented in this local prototype yet."`
 
@@ -19,7 +19,7 @@ Authoritative grounding:
 
 ## 0. Current Status
 
-**Real today (carry-overs from `BuildPlan.md`):**
+**Real today (carry-overs from `BuildPlan-01.md`):**
 
 - React + Vite app, Vite 8, React 18.3.1, plugin-react 6.
 - Local Express API in `server/index.js` on port `8787`; Vite proxies `/api` to it.
@@ -93,9 +93,9 @@ Stretch (this plan describes but defers to later phases):
 
 ---
 
-## 2. Why this is bigger than `BuildPlan.md`
+## 2. Why this is bigger than `BuildPlan-01.md`
 
-`BuildPlan.md` was scaffolding. The deliverable was "the page renders." This plan is a real backend, schema design, identity, file storage, and at least nine new persistent surfaces. Estimate: 6–10 weeks of focused work for one engineer to reach Phases 1–10. Phases 11+ are weeks more.
+`BuildPlan-01.md` was scaffolding. The deliverable was "the page renders." This plan is a real backend, schema design, identity, file storage, and at least nine new persistent surfaces. Estimate: 6–10 weeks of focused work for one engineer to reach Phases 1–10. Phases 11+ are weeks more.
 
 Three constraints worth surfacing early:
 
