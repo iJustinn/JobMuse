@@ -45,3 +45,10 @@ Persistent project-specific troubleshooting notes for future Codex runs.
 - Cause: Tailoring can accidentally invent keyword matches when the target JD is richer than the source resume.
 - Fix: Use JD signals for highlighting, but keep resume-backed memory and fallback CV bullets limited to documented facts from the DOCX.
 - Reuse: When seeding user-owned data from a resume, separate "JD asks for this" from "the resume supports this" so generated fallback content does not overclaim.
+
+### 2026-05-13 - Git submodule writes need escalation in Google Drive worktrees
+- Context: Adding `career-ops` as a git submodule for the filesystem adapter phase.
+- Symptom: `rtk git submodule add https://github.com/santifer/career-ops.git career-ops` failed with `.git/index.lock: Operation not permitted`.
+- Cause: The sandbox could read the repo but could not write Git metadata under the Google Drive-backed worktree.
+- Fix: Rerun the same `rtk git submodule` command with escalated permissions.
+- Reuse: Escalate promptly when submodule or index-mutating git commands fail with `.git/index.lock: Operation not permitted` in this workspace.

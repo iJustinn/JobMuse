@@ -5,7 +5,7 @@ import helmet from "helmet";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readServerConfig } from "./config.js";
-import { createCvRouter } from "./routes/cv.js";
+import { createCareerOpsRouter } from "./routes/careerOps.js";
 
 export function createServer(config = readServerConfig()) {
   const app = express();
@@ -25,7 +25,7 @@ export function createServer(config = readServerConfig()) {
     res.json({ ok: true });
   });
 
-  app.use("/api", createCvRouter(config));
+  app.use("/api", createCareerOpsRouter(config));
 
   app.use((req, res) => {
     res.status(404).json({ error: "Not found", path: req.path });
@@ -33,7 +33,7 @@ export function createServer(config = readServerConfig()) {
 
   app.use((error, _req, res, _next) => {
     const message = error instanceof Error ? error.message : "Server error";
-    res.status(500).json({ error: message });
+    res.status(error.statusCode || 500).json({ error: message });
   });
 
   return app;

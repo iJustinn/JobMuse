@@ -81,11 +81,23 @@ export const Button = ({ children, kind = "ghost", size = "md", icon, iconRight,
 // Status dot for application status
 export const StatusDot = ({ status }) => {
   const map = {
+    Evaluated: { bg: "var(--jr-fg-2)" },
+    evaluated: { bg: "var(--jr-fg-2)" },
     Draft:     { bg: "var(--jr-fg-3)" },
     Applied:   { bg: "var(--jr-fg-1)" },
+    applied:   { bg: "var(--jr-fg-1)" },
+    Responded: { bg: "var(--jr-fg-1)", ring: true },
+    responded: { bg: "var(--jr-fg-1)", ring: true },
     Interview: { bg: "var(--jr-ink)" },
+    interview: { bg: "var(--jr-ink)" },
     Offer:     { bg: "var(--jr-ink)", ring: true },
+    offer:     { bg: "var(--jr-ink)", ring: true },
     Rejected:  { bg: "var(--jr-fg-3)", hollow: true },
+    rejected:  { bg: "var(--jr-fg-3)", hollow: true },
+    Discarded: { bg: "var(--jr-fg-3)", hollow: true },
+    discarded: { bg: "var(--jr-fg-3)", hollow: true },
+    SKIP:      { bg: "var(--jr-fg-3)", hollow: true },
+    skip:      { bg: "var(--jr-fg-3)", hollow: true },
     Ghosted:   { bg: "var(--jr-fg-3)", hollow: true },
   };
   const s = map[status] || map.Draft;
