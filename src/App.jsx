@@ -9,7 +9,19 @@ import {
   useTweaks,
 } from "./components/TweaksPanel.jsx";
 import { JR_DATA as D } from "./data.js";
-import { Dashboard, History, Memory, NewApplication, Profile, Settings } from "./screens.jsx";
+import {
+  Applications,
+  Dashboard,
+  Evaluate,
+  Insights,
+  Memory,
+  Pipeline,
+  Profile,
+  Reports,
+  Scan,
+  Settings,
+  Setup,
+} from "./screens.jsx";
 
 // Main App shell for JobMuse — sidebar, routing, theme/density orchestration, tweaks.
 
@@ -24,10 +36,15 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
 
 const NAV = [
   { key: "home",     label: "Dashboard",       icon: "home" },
-  { key: "new",      label: "New application", icon: "plus" },
-  { key: "history",  label: "Applications",    icon: "history" },
+  { key: "evaluate", label: "Evaluate",        icon: "wand" },
+  { key: "applications", label: "Applications", icon: "history" },
+  { key: "pipeline", label: "Pipeline",        icon: "filter" },
+  { key: "scan",     label: "Scan",            icon: "search" },
+  { key: "reports",  label: "Reports",         icon: "doc" },
+  { key: "insights", label: "Insights",        icon: "sparkle" },
   { key: "memory",   label: "Memory",          icon: "memory" },
-  { key: "profile",  label: "About you",       icon: "user" },
+  { key: "profile",  label: "Profile",         icon: "user" },
+  { key: "setup",    label: "Setup",           icon: "check" },
   { key: "settings", label: "Settings",        icon: "settings" },
 ];
 
@@ -58,12 +75,12 @@ export default function App() {
     document.documentElement.setAttribute("data-density", t.density);
   }, [t.dark, t.density]);
 
-  // Cmd-K to jump to New
+  // Cmd-K to jump to Evaluate
   React.useEffect(() => {
     const onKey = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setRoute("new");
+        setRoute("evaluate");
       }
     };
     window.addEventListener("keydown", onKey);
@@ -73,10 +90,15 @@ export default function App() {
   const screen = (() => {
     switch (route) {
       case "home":     return <Dashboard go={setRoute} generated={generated}/>;
-      case "new":      return <NewApplication generated={generated} setGenerated={setGenerated} layout={t.cvLayout}/>;
-      case "history":  return <History go={setRoute}/>;
+      case "evaluate": return <Evaluate/>;
+      case "applications": return <Applications go={setRoute}/>;
+      case "pipeline": return <Pipeline/>;
+      case "scan":     return <Scan/>;
+      case "reports":  return <Reports/>;
+      case "insights": return <Insights/>;
       case "memory":   return <Memory/>;
       case "profile":  return <Profile/>;
+      case "setup":    return <Setup/>;
       case "settings": return <Settings/>;
       default:         return null;
     }
@@ -100,7 +122,7 @@ export default function App() {
       <main className="jr-scroll" style={{
         overflowY: "auto", overflowX: "hidden",
         background: "var(--jr-bg)",
-        padding: isMobile ? "18px 16px" : route === "memory" || route === "new" && generated ? "28px 32px" : "32px 40px",
+        padding: isMobile ? "18px 16px" : route === "memory" ? "28px 32px" : "32px 40px",
         height: isMobile ? "auto" : "100vh", display: "flex", flexDirection: "column",
         minWidth: 0,
       }}>
@@ -130,8 +152,8 @@ export default function App() {
         <TweakButton onClick={() => {
           // demo flow: jump to new + generate
           setGenerated(false);
-          setRoute("new");
-        }}>Replay JD → CV demo</TweakButton>
+          setRoute("evaluate");
+        }}>Open evaluation</TweakButton>
       </TweaksPanel>
     </div>
   );
@@ -252,12 +274,12 @@ function Sidebar({ route, setRoute, collapsed, toggleCollapsed, monoBrand, mobil
             >
               <Icon name={n.icon} size={15} style={{ color: active ? "var(--jr-ink)" : "var(--jr-fg-1)" }}/>
               {!compact && <span>{n.label}</span>}
-              {!compact && !mobile && n.key === "history" && (
+              {!compact && !mobile && n.key === "applications" && (
                 <span style={{ marginLeft: "auto", fontSize: 11, color: "var(--jr-fg-2)", fontFamily: "var(--jr-mono)" }}>
-                  {D.applications.length}
+                  API
                 </span>
               )}
-              {!compact && !mobile && n.key === "new" && (
+              {!compact && !mobile && n.key === "evaluate" && (
                 <Kbd style={{ marginLeft: "auto" }}>⌘K</Kbd>
               )}
             </button>
@@ -284,8 +306,8 @@ function Sidebar({ route, setRoute, collapsed, toggleCollapsed, monoBrand, mobil
           border: "1px solid var(--jr-border)", marginTop: 10,
         }}>
           <div style={{ fontSize: 12, color: "var(--jr-fg-1)", lineHeight: 1.5 }}>
-            <div style={{ fontWeight: 500, color: "var(--jr-fg)", marginBottom: 4 }}>Free until graduation</div>
-            Unlimited applications. Then $9/mo.
+            <div style={{ fontWeight: 500, color: "var(--jr-fg)", marginBottom: 4 }}>career-ops backend</div>
+            File-backed local workflow.
           </div>
         </div>
       )}

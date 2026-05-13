@@ -1,19 +1,29 @@
 import { z } from "zod";
 
 export const profileSchema = z.object({
-  id: z.string().uuid().optional(),
-  email: z.string().email(),
-  displayName: z.string().min(1),
-  pronouns: z.string().optional().default(""),
-  phone: z.string().optional().default(""),
-  location: z.string().optional().default(""),
-  openToRemote: z.boolean().default(true),
-  personalSite: z.string().url().optional().or(z.literal("")),
-  github: z.string().optional().default(""),
-  linkedin: z.string().optional().default(""),
-  defaultSummary: z.string().optional().default(""),
-  avatarUrl: z.string().url().optional().or(z.literal("")),
-  initials: z.string().optional().default(""),
+  candidate: z.object({
+    full_name: z.string().default(""),
+    email: z.string().default(""),
+    phone: z.string().default(""),
+    location: z.string().default(""),
+    linkedin: z.string().default(""),
+    portfolio_url: z.string().default(""),
+    github: z.string().default(""),
+  }).default({}),
+  target_roles: z.object({
+    primary: z.array(z.string()).default([]),
+    archetypes: z.array(z.record(z.string(), z.unknown())).default([]),
+  }).default({}),
+  narrative: z.object({
+    headline: z.string().default(""),
+    exit_story: z.string().default(""),
+    superpowers: z.array(z.string()).default([]),
+    proof_points: z.array(z.record(z.string(), z.unknown())).default([]),
+  }).default({}),
+  compensation: z.record(z.string(), z.unknown()).default({}),
+  location: z.record(z.string(), z.unknown()).default({}),
+  cv: z.record(z.string(), z.unknown()).default({}),
+  advancedOverrides: z.string().default(""),
 });
 
-export const profilePatchSchema = profileSchema.partial().omit({ id: true, email: true });
+export const profileWriteSchema = profileSchema.partial();
